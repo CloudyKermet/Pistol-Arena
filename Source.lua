@@ -311,26 +311,7 @@ hl.FillTransparency = 0.3                       -- 0 = solid, 1 = invisible
 hl.OutlineTransparency = 1                       -- 0 = solid outline
 hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop  -- Or Occluded
 
-local hue = 0
 
-RunService.Heartbeat:Connect(function(dt)
-    hue = (hue + dt * 0.75) % 1
-    local color = Color3.fromHSV(hue, 1, 1)
-
-    local vm = workspace.CurrentCamera:FindFirstChild("Viewmodel")
-    if not vm then return end
-
-    local parts = vm:FindFirstChild("Parts")
-    if not parts then return end
-
-    for _, part in ipairs(parts:GetChildren()) do
-        local highlight = part:FindFirstChild("hl1")
-        if highlight then
-            highlight.FillColor = color
-            highlight.OutlineColor = color
-        end
-    end
-end)
 
 local cam = workspace.Camera
 RunService.Heartbeat:Connect(function(dt)
@@ -389,6 +370,27 @@ gun:FindFirstChild("hl1"):Destroy()
                 end
             end
         end		
+end)
+
+local hue = 0
+
+RunService.Heartbeat:Connect(function(dt)
+    hue = (hue + dt * 0.75) % 1
+    local color = Color3.fromHSV(hue, 1, 1)
+
+    local vm = workspace.CurrentCamera:FindFirstChild("Viewmodel")
+    if not vm then return end
+
+    local parts = vm:FindFirstChild("Parts")
+    if not parts then return end
+
+    for _, gun in ipairs(parts:GetChildren()) do
+        local h = gun:FindFirstChild("hl1")
+        if h then
+            h.FillColor = color
+            h.OutlineColor = color
+        end
+    end
 end)
 
 
