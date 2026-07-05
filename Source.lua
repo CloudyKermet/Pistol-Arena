@@ -312,7 +312,7 @@ hl.OutlineTransparency = 1                       -- 0 = solid outline
 hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop  -- Or Occluded
 
 game:GetService("RunService").Heartbeat:Connect(function()
-	hl.FillColor = Color3.fromHSV((tick() % 6) / 4, 6, 8)
+	hl.FillColor = Color3.fromHSV((tick() * 1.0) % 1, 1, 1)
 end)
 
 local cam = workspace.Camera
