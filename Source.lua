@@ -366,7 +366,8 @@ ui:AddToggle(1, "Speed", false, function(value)
 end)
 
 ui:AddToggle(1, "Always HeadShot", false, function(value)
-  alwayshead = value
+    alwayshead = value
+    getgenv().alwayshead = value
 end)
 
 ui:AddToggle(2, "Master Esp", false, function(value)
