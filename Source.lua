@@ -375,7 +375,7 @@ end)
 local hue = 0
 
 RunService.Heartbeat:Connect(function(dt)
-    hue = (hue + dt * 0.50) % 1
+    hue = (hue + dt * 0.20) % 1
     local color = Color3.fromHSV(hue, 1, 1)
 
     local vm = workspace.CurrentCamera:FindFirstChild("Viewmodel")
