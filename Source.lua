@@ -108,13 +108,11 @@ end)
 ui:AddToggle(2, "Gun RGB", false, function(value)
   guncham = value
 
-if not value and cam:FindFirstChild("Viewmodel") then
+if not value and workspace.Camera:FindFirstChild("Viewmodel") then
 for _, gun in ipairs(cam:FindFirstChild("Viewmodel"):FindFirstChild("Parts"):GetChildren()) do
 if gun:IsA("MeshPart") then
 gun.Transparency = 0	
-if gun:FindFirstChild("hl1") then
 gun:FindFirstChild("hl1"):Destroy()
-					end
                 end
             end
         end		
