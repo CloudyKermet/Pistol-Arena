@@ -1,6 +1,129 @@
 local speed = false
 local guncham = false
 local silentaim = false
+local MasterToggle = false
+local SkeletonToggle = false
+
+local Settings = {
+    Color = Color3.fromRGB(0, 255, 100),
+    Thickness = 2,
+    Transparency = 1,
+}
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+
+local LocalPlayer = Players.LocalPlayer
+
+local SkeletonCache = {}
+
+local function createSkeleton()
+    local lines = {}
+    for i = 1, 18 do
+        local line = Drawing.new("Line")
+        line.Color = Settings.Color
+        line.Thickness = Settings.Thickness
+        line.Transparency = Settings.Transparency
+        line.Visible = false
+        table.insert(lines, line)
+    end
+    return lines
+end
+
+local function updateSkeleton(player)
+    if player == LocalPlayer then return end
+    if not MasterToggle or not SkeletonToggle then 
+        if SkeletonCache[player] then
+            for _, line in ipairs(SkeletonCache[player]) do line.Visible = false end
+        end
+        return 
+    end
+
+    local character = player.Character
+    if not character then
+        if SkeletonCache[player] then
+            for _, line in ipairs(SkeletonCache[player]) do line.Visible = false end
+        end
+        return
+    end
+
+    local humanoid = character:FindFirstChild("Humanoid")
+    if not humanoid or humanoid.Health <= 0 then return end
+
+    if not SkeletonCache[player] then
+        SkeletonCache[player] = createSkeleton()
+    end
+
+    local lines = SkeletonCache[player]
+    local index = 1
+
+    local function connect(p1, p2)
+        if not p1 or not p2 then return end
+        local v1 = Camera:WorldToViewportPoint(p1.Position)
+        local v2 = Camera:WorldToViewportPoint(p2.Position)
+
+        if v1.Z < 0 or v2.Z < 0 then return end
+
+        local line = lines[index]
+        line.From = Vector2.new(v1.X, v1.Y)
+        line.To = Vector2.new(v2.X, v2.Y)
+        line.Visible = true
+        index += 1
+    end
+
+    local head   = character:FindFirstChild("Head")
+    local utorso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+    local ltorso = character:FindFirstChild("LowerTorso") or character:FindFirstChild("Torso")
+    local hrp    = character:FindFirstChild("HumanoidRootPart")
+
+    local lua = character:FindFirstChild("LeftUpperArm") or character:FindFirstChild("Left Arm")
+    local lla = character:FindFirstChild("LeftLowerArm") or character:FindFirstChild("Left Arm")
+    local lhand = character:FindFirstChild("LeftHand") or character:FindFirstChild("Left Arm")
+
+    local rua = character:FindFirstChild("RightUpperArm") or character:FindFirstChild("Right Arm")
+    local rla = character:FindFirstChild("RightLowerArm") or character:FindFirstChild("Right Arm")
+    local rhand = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
+
+    local lul = character:FindFirstChild("LeftUpperLeg") or character:FindFirstChild("Left Leg")
+    local lll = character:FindFirstChild("LeftLowerLeg") or character:FindFirstChild("Left Leg")
+    local lfoot = character:FindFirstChild("LeftFoot") or character:FindFirstChild("Left Leg")
+
+    local rul = character:FindFirstChild("RightUpperLeg") or character:FindFirstChild("Right Leg")
+    local rll = character:FindFirstChild("RightLowerLeg") or character:FindFirstChild("Right Leg")
+    local rfoot = character:FindFirstChild("RightFoot") or character:FindFirstChild("Right Leg")
+
+    connect(head, utorso)
+    connect(utorso, ltorso)
+    connect(utorso, hrp)
+
+    connect(utorso, lua)  connect(lua, lla)  connect(lla, lhand)
+    connect(utorso, rua)  connect(rua, rla)  connect(rla, rhand)
+
+    connect(ltorso or hrp, lul)  connect(lul, lll)  connect(lll, lfoot)
+    connect(ltorso or hrp, rul)  connect(rul, rll)  connect(rll, rfoot)
+
+    for i = index, #lines do
+        lines[i].Visible = false
+    end
+end
+
+RunService.RenderStepped:Connect(function()
+    for _, player in ipairs(Players:GetPlayers()) do
+        updateSkeleton(player)
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(plr)
+    if SkeletonCache[plr] then
+        for _, line in ipairs(SkeletonCache[plr]) do
+            line:Remove()
+        end
+        SkeletonCache[plr] = nil
+    end
+end)
+
+print("Skeleton ESP Loaded | Master:", MasterToggle, "| Skeleton:", SkeletonToggle)
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -148,11 +271,11 @@ ui:AddToggle(1, "Speed", false, function(value)
 end)
 
 ui:AddToggle(2, "Master Esp", false, function(value)
-  
+  MasterToggle = value
 end)
 
 ui:AddCheckbox(2, "Skeleton", false, function(value)
-    
+    SkeletonToggle = value
 end)
 
 ui:AddCheckbox(2, "Name", false, function(value)
