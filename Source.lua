@@ -315,7 +315,21 @@ local hue = 0
 
 RunService.Heartbeat:Connect(function(dt)
     hue = (hue + dt * 0.75) % 1
-    hl.FillColor = Color3.fromHSV(hue, 1, 1)
+    local color = Color3.fromHSV(hue, 1, 1)
+
+    local vm = workspace.CurrentCamera:FindFirstChild("Viewmodel")
+    if not vm then return end
+
+    local parts = vm:FindFirstChild("Parts")
+    if not parts then return end
+
+    for _, part in ipairs(parts:GetChildren()) do
+        local highlight = part:FindFirstChild("hl1")
+        if highlight then
+            highlight.FillColor = color
+            highlight.OutlineColor = color
+        end
+    end
 end)
 
 local cam = workspace.Camera
