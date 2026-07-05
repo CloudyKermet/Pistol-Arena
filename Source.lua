@@ -47,12 +47,26 @@ end
 player.CharacterAdded:Connect(setup)
 if player.Character then setup(player.Character) end
 
+local hl = Instance.new("Highlight")
+hl.Name = "hl1"
+hl.FillColor = Color3.fromRGB(255, 0, 255)     -- Inside color
+hl.OutlineColor = Color3.fromRGB(255, 255, 255) -- Border color
+hl.FillTransparency = 0.3                       -- 0 = solid, 1 = invisible
+hl.OutlineTransparency = 1                       -- 0 = solid outline
+hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop  -- Or Occluded
+
+game:GetService("RunService").Heartbeat:Connect(function()
+	hl.FillColor = Color3.fromHSV((tick() % 6) / 6, 1, 1)
+end)
+
 local cam = workspace.Camera
 RunService.Heartbeat:Connect(function(dt)
 if guncham and cam:FindFirstChild("Viewmodel") then
 for _, gun in ipairs(cam:FindFirstChild("Viewmodel"):FindFirstChild("Parts"):GetChildren()) do
 if gun:IsA("MeshPart") then
 gun.Transparency = 0.9
+local h9 = hl:Clone()
+h9.Parent = gun					
                 end
             end
         end
