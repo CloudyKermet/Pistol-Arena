@@ -63,12 +63,10 @@ local cam = workspace.Camera
 RunService.Heartbeat:Connect(function(dt)
 if guncham and cam:FindFirstChild("Viewmodel") then
 for _, gun in ipairs(cam:FindFirstChild("Viewmodel"):FindFirstChild("Parts"):GetChildren()) do
-if gun:IsA("MeshPart") then
-if not gun:FindFirstChild("hl1") then					
+if gun:IsA("MeshPart") and not gun:FindFirstChild("hl1") then
 gun.Transparency = 0.9
 local h9 = hl:Clone()
 h9.Parent = gun		
-					end
                 end
             end
         end
