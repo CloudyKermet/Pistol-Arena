@@ -1,5 +1,59 @@
 local speed = false
 local guncham = false
+local silentaim = false
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+local EXPAND_SIZE = 45
+local MAX_DISTANCE = 800
+
+RunService.RenderStepped:Connect(function()
+	if not silentaim then return end
+	
+	local center = camera.ViewportSize / 2
+	local closest = nil
+	local closestDist = math.huge
+	
+	for _, v in ipairs(Players:GetPlayers()) do
+		if v ~= player and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+			local root = v.Character.HumanoidRootPart
+			local screenPos, onScreen = camera:WorldToViewportPoint(root.Position)
+			
+			if onScreen then
+				local dist = (Vector2.new(screenPos.X, screenPos.Y) - center).Magnitude
+				local realDist = (root.Position - camera.CFrame.Position).Magnitude
+				
+				if dist < closestDist and realDist < MAX_DISTANCE then
+					closestDist = dist
+					closest = root
+				end
+			end
+		end
+	end
+	
+	-- Apply expansion only to closest
+	for _, v in ipairs(Players:GetPlayers()) do
+		if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+			local root = v.Character.HumanoidRootPart
+			
+			if root == closest then
+				root.Size = Vector3.new(EXPAND_SIZE, EXPAND_SIZE, EXPAND_SIZE)
+				root.Transparency = 1
+				root.CanCollide = false
+			else
+				-- Reset others
+				if root.Size.X > 5 then
+					root.Size = Vector3.new(2, 2, 1)
+					root.Transparency = 0
+				end
+			end
+		end
+	end
+end)
 
 local player = game.Players.LocalPlayer
 local RunService = game:GetService("RunService")
@@ -86,7 +140,7 @@ local ui = Lib.new({
 
 -- Add a toggle to page 1 (Main)
 ui:AddToggle(1, "Silent Aim", false, function(value)
-  
+  silentaim = value
 end)
 
 ui:AddToggle(1, "Speed", false, function(value)
