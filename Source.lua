@@ -3,6 +3,85 @@ local guncham = false
 local silentaim = false
 local MasterToggle = false
 local SkeletonToggle = false
+local NameToggle = true
+
+local Camera = workspace.CurrentCamera
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local LocalPlayer = Players.LocalPlayer
+
+local NameCache = {}
+
+local function createNameESP()
+    local text = Drawing.new("Text")
+    text.Visible = false
+    text.Center = true
+    text.Outline = true
+    text.OutlineColor = Color3.new(0, 0, 0)
+    text.Font = 3
+    text.Size = 16
+    text.Color = Color3.new(1, 1, 1)
+    return text
+end
+
+local function updateNameESP(player)
+    if player == LocalPlayer then return end
+    if not MasterToggle or not NameToggle then
+        if NameCache[player] then
+            NameCache[player].Visible = false
+        end
+        return
+    end
+
+    local character = player.Character
+    if not character then
+        if NameCache[player] then
+            NameCache[player].Visible = false
+        end
+        return
+    end
+
+    local head = character:FindFirstChild("Head")
+    local humanoid = character:FindFirstChild("Humanoid")
+    
+    if not head or not humanoid or humanoid.Health <= 0 then
+        if NameCache[player] then
+            NameCache[player].Visible = false
+        end
+        return
+    end
+
+    if not NameCache[player] then
+        NameCache[player] = createNameESP()
+    end
+
+    local text = NameCache[player]
+    local headPos, onScreen = Camera:WorldToViewportPoint(head.Position)
+
+    if onScreen then
+        text.Position = Vector2.new(headPos.X, headPos.Y - 30)
+        text.Text = player.Name
+        text.Visible = true
+    else
+        text.Visible = false
+    end
+end
+
+-- Main Loop
+RunService.RenderStepped:Connect(function()
+    for _, player in ipairs(Players:GetPlayers()) do
+        updateNameESP(player)
+    end
+end)
+
+-- Cleanup
+Players.PlayerRemoving:Connect(function(plr)
+    if NameCache[plr] then
+        NameCache[plr]:Remove()
+        NameCache[plr] = nil
+    end
+end)
 
 local Settings = {
     Color = Color3.fromRGB(0, 255, 100),
