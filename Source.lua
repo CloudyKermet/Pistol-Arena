@@ -3,7 +3,7 @@ local guncham = false
 local silentaim = false
 local MasterToggle = false
 local SkeletonToggle = false
-local NameToggle = true
+local NameToggle = false
 
 local Camera = workspace.CurrentCamera
 local Players = game:GetService("Players")
@@ -358,7 +358,7 @@ ui:AddCheckbox(2, "Skeleton", false, function(value)
 end)
 
 ui:AddCheckbox(2, "Name", false, function(value)
-    
+    NameToggle = value
 end)
 
 ui:AddToggle(2, "Gun RGB", false, function(value)
