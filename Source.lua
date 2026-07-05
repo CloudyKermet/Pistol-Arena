@@ -4,8 +4,7 @@ local silentaim = false
 local MasterToggle = false
 local SkeletonToggle = false
 local NameToggle = false
-local alwayshead = false
-getgenv().alwayshead = alwayshead
+local alwayshead = false  -- Starts ON
 
 local Remote = game:GetService("ReplicatedStorage"):WaitForChild("SystemResources",5):WaitForChild("BufferCache",5):WaitForChild("RequestActionSync",5)
 if not Remote then return end
@@ -14,7 +13,7 @@ local OldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
     if self == Remote and getnamecallmethod() == "FireServer" then
         local Args = {...}
         if typeof(Args[1]) == "table" and Args[1].hitInstance and Args[1].hitHumanoid and typeof(Args[1].IsHeadshot) == "boolean" then
-            if getgenv().alwayshead then
+            if alwayshead then
                 Args[1].IsHeadshot = true
             end
         end
@@ -22,7 +21,6 @@ local OldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
     end
     return OldNamecall(self, ...)
 end)
-
 local Camera = workspace.CurrentCamera
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
